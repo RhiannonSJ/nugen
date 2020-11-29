@@ -2,6 +2,7 @@
 art_make( EXCLUDE EventGeneratorTest_module.cc
           MODULE_LIBRARIES nusimdata_SimulationBase
                            nugen_EventGeneratorBase_GENIE
+                           larcoreobj_SummaryData
                         art_Framework_Services_Optional_RandomNumberGenerator_service
                         art_Framework_Services_Registry
 # for MixGenieEvents_module
