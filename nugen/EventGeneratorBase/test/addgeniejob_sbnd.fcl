@@ -75,7 +75,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/sbnd/data/users/rsjones/GEVGEN/genie_master/gevgenJobs/gevgen_files_5_active.list" ]
+physics.producers.generator.fileList: [ "/sbnd/data/users/rsjones/GEVGEN/genie_master/gevgenJobs/gevgen_files_active.list" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"
