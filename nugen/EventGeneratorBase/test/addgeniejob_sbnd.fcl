@@ -37,6 +37,7 @@ services.message: @local::sbnd_message_services_interactive # from messages_sbnd
 source:
 {
   module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
   firstRun:    1 # Run number to use for this file
   firstSubRun: 1 # Subrun number to use for this file
   firstEvent:  10 # number of first event in the file
@@ -75,7 +76,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/sbnd/data/users/rsjones/GEVGEN/genie_master/gevgenJobs/gevgen_files_active.list" ]
+physics.producers.generator.fileList: [ "/sbnd/data/users/rsjones/GEVGEN/genie_master/gevgenJobs/SuSAv2/sbnd/all/activeSuSA8e19POT.ghep.root" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"
