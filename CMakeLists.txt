@@ -28,6 +28,8 @@ cet_set_compiler_flags(DIAGS CAUTIOUS WERROR
                                          -Wno-variadic-macros>)
 cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
+find_package(nufinder REQUIRED EXPORT)
+
 find_package(art REQUIRED)
 find_package(art_root_io REQUIRED)
 find_package(canvas_root_io REQUIRED)
@@ -37,7 +39,6 @@ find_package(cetlib_except REQUIRED)
 find_package(CLHEP REQUIRED)
 find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlayer FFTW EGPythia6 Gui Tree REQUIRED)
 find_package(dk2nudata REQUIRED)
-find_package(dk2nugenie REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(ifdh_art REQUIRED)
 find_package(log4cpp REQUIRED)
@@ -47,6 +48,7 @@ find_package(LHAPDF REQUIRED)
 find_package(LibXml2 REQUIRED)
 find_package(Pythia6 REQUIRED)
 find_package(GENIE REQUIRED)
+find_package(dk2nugenie REQUIRED)
 
 # macros
 include(ArtMake)
