@@ -250,7 +250,7 @@ libdir	fq_dir		lib
 ####################################
 product		version		qual	flags		<table_format=2>
 art_root_io	v1_08_05	-
-dk2nugenie	v01_10_00d	-
+dk2nugenie	v01_10_00g	-
 ifdh_art	v2_13_13	-
 nufinder        v1_00_00       -
 nusimdata	v1_26_01	-
