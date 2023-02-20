@@ -249,7 +249,7 @@ libdir	fq_dir		lib
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-art_root_io	v1_11_01	-
+art_root_io	v1_11_02	-
 dk2nugenie	v01_10_01d	-
 ifdh_art	v2_15_03	-
 nufinder        v1_01_01       -
@@ -310,8 +310,12 @@ end_product_list
 #
 ####################################
 qualifier	nusimdata	art_root_io	dk2nugenie	ifdh_art   nufinder notes
+c14:debug	c14:debug	c14:debug	c14:debug	c14:debug  -nq-
+c14:prof	c14:prof	c14:prof	c14:prof	c14:prof   -nq-
 c7:debug	c7:debug	c7:debug	c7:debug	c7:debug   -nq-
 c7:prof		c7:prof		c7:prof		c7:prof		c7:prof    -nq-
+e26:debug	e26:debug	e26:debug	e26:debug	e26:debug  -nq-
+e26:prof	e26:prof	e26:prof	e26:prof	e26:prof   -nq-
 e20:debug	e20:debug	e20:debug	e20:debug	e20:debug  -nq-
 e20:prof	e20:prof	e20:prof	e20:prof	e20:prof   -nq-
 end_qualifier_list
