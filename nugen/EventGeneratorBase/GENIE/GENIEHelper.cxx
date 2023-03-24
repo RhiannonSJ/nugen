@@ -156,6 +156,8 @@
 #include "nugen/EventGeneratorBase/GENIE/EvtTimeShiftFactory.h"
 #include "nugen/EventGeneratorBase/GENIE/EvtTimeShiftI.h"
 
+#include "nugen/EventGeneratorBase/GENIE/GPowerSpectrumAtmoFlux.h"
+
 // nusimdata includes
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCFlux.h"
@@ -257,11 +259,13 @@ namespace evgb {
     , fRandomTimeOffset  (pset.get< double                   >("RandomTimeOffset", 1.e4) )
     , fSpillTimeConfig   (pset.get< std::string              >("SpillTimeConfig",    "") )
     , fAddGenieVtxTime   (pset.get< bool                     >("AddGenieVtxTime", false) )
+    , fForceApplyFlxWgt  (pset.get< bool                     >("ForceApplyFlxWgt", true) )
     , fGenFlavors        (pset.get< std::vector<int>         >("GenFlavors")             )
     , fAtmoEmin          (pset.get< double                   >("AtmoEmin",          0.1) )
     , fAtmoEmax          (pset.get< double                   >("AtmoEmax",         10.0) )
     , fAtmoRl            (pset.get< double                   >("Rl",               20.0) )
     , fAtmoRt            (pset.get< double                   >("Rt",               20.0) )
+    , fAtmoSpectralIndex (pset.get< double                   >("SpectralIndex",     2.0) )
     , fEnvironment       (pset.get< std::vector<std::string> >("Environment")            )
     , fXSecTable         (pset.get< std::string              >("XSecTable",          "") ) //e.g. "gxspl-FNALsmall.xml"
     , fTuneName          (pset.get< std::string              >("TuneName","${GENIE_XSEC_TUNE}") )
@@ -388,7 +392,7 @@ namespace evgb {
     genie::utils::app_init::RandGen(seedval);
 
     // special things for atmos fluxes
-    if ( fFluxType.find("atmo_") == 0 ) AtmoFluxCheck();
+    if ( fFluxType.find("atmo_") == 0 && fFluxType.find("PowerSpectrum") == std::string::npos) AtmoFluxCheck();
 
     // make the histogram associations
     if ( fFluxType.find("histogram") == 0 ) HistogramFluxCheck();
@@ -410,7 +414,17 @@ namespace evgb {
         << fFunctionalFlux << " E [" << fEmin << ":" << fEmax
         << "] GeV with " << fFunctionalBinning << " bins "
         << "with the following flavors: " << flvlist;
-    } else {
+    } else if (fFluxType.find("PowerSpectrum") != std::string::npos) {
+      mf::LogInfo("GENIEHelper")
+        << "Generating neutrinos using the a power spectrum with Spectral index = "
+        << fAtmoSpectralIndex
+        << ", with the following flavors: " << flvlist
+        << "\nThe energy range is between:  " << fAtmoEmin << " GeV and "
+        << fAtmoEmax << " GeV."
+        << '\n'
+        << "  Generation surface of: (" << fAtmoRl << ","
+        << fAtmoRt << ")";
+    }  else {
 
       // flux methods other than "mono" and "function" require files
       std::string fileliststr;
@@ -731,6 +745,7 @@ namespace evgb {
     if ( tmpFluxType.find("BGLRS")  != std::string::npos ) tmpFluxType = "atmo_BGLRS";
     if ( tmpFluxType.find("HONDA")  != std::string::npos ) tmpFluxType = "atmo_HAKKM";
     if ( tmpFluxType.find("HAKKM")  != std::string::npos ) tmpFluxType = "atmo_HAKKM";
+    if ( tmpFluxType.find("POWER")  != std::string::npos ) tmpFluxType = "atmo_PowerSpectrum";
     // TTree-based fluxes (old "ntuple" is really "numi")
     //    we're allowed to randomize the order here, and squeeze out duplicates
     if ( tmpFluxType.find("simple") != std::string::npos ) tmpFluxType = "tree_simple";
@@ -1263,6 +1278,52 @@ namespace evgb {
       delete input_func;
     } //end if using function beam
 
+    else if(fFluxType.find("PowerSpectrum") != std::string::npos){
+      genie::flux::GPowerSpectrumAtmoFlux *power_flux = new genie::flux::GPowerSpectrumAtmoFlux;
+      power_flux->SetSpectralIndex(fAtmoSpectralIndex);
+      power_flux->SetFlavors(fGenFlavors);
+      power_flux->SetMinEnergy(fAtmoEmin);
+      power_flux->SetMaxEnergy(fAtmoEmax);
+
+      mf::LogInfo("GENIEHelper") << "Setting Emin=" << fEmin << " ; Emax=" << fEmax;
+
+      for ( size_t j = 0; j < fGenFlavors.size(); ++j ) {
+        int         flavor  = fGenFlavors[j];
+        std::string flxfile = fSelectedFluxFiles[j];
+        power_flux->AddFluxFile(flavor,flxfile); // pre-R-2_11_0 was SetFluxFile()
+      }
+
+
+      if ( fFluxRotation ){
+        power_flux->SetUserCoordSystem(*fFluxRotation);
+        std::ostringstream atmoCfgText;
+        const int w=13, p=6;
+        auto old_p = atmoCfgText.precision(p);
+        atmoCfgText << "\n UserCoordSystem rotation:\n"
+                    << "  [ "
+                    << std::setw(w) << fFluxRotation->XX() << " "
+                    << std::setw(w) << fFluxRotation->XY() << " "
+                    << std::setw(w) << fFluxRotation->XZ() << " ]\n"
+                    << "  [ "
+                    << std::setw(w) << fFluxRotation->YX() << " "
+                    << std::setw(w) << fFluxRotation->YY() << " "
+                    << std::setw(w) << fFluxRotation->YZ() << " ]\n"
+                    << "  [ "
+                    << std::setw(w) << fFluxRotation->ZX() << " "
+                    << std::setw(w) << fFluxRotation->ZY() << " "
+                    << std::setw(w) << fFluxRotation->ZZ() << " ]\n";
+        atmoCfgText.precision(old_p);
+        mf::LogInfo("GENIEHelper") << atmoCfgText.str();
+      }
+
+      power_flux->LoadFluxData();
+
+      // configure flux generation surface:
+      power_flux->SetRadii(fAtmoRl, fAtmoRt);
+
+      fFluxD = power_flux;//dynamic_cast<genie::GFluxI *>(atmo_flux_driver);
+    }
+
     // Using the atmospheric fluxes
     else if ( fFluxType.find("atmo_") == 0 ) {
 
@@ -1562,12 +1623,25 @@ namespace evgb {
       // discrepency between AtmoFluxDriver(/m2) and Generate(/cm2)
       // and it need to be normalized by the generation surface area since
       // it's not taken into accoutn in the flux driver
-      fTotalExposure =
-        (dynamic_cast<genie::flux::GAtmoFlux *>(fFluxD)->NFluxNeutrinos())
-        * 1.0e4 / (TMath::Pi() * fAtmoRt*fAtmoRt);
 
-      mf::LogInfo("GENIEHelper")
-        << "===> Atmo EXPOSURE = " << fTotalExposure << " seconds";
+      long int nNeutrinos;
+
+      if(fFluxType.find("PowerSpectrum") != std::string::npos){
+        nNeutrinos = dynamic_cast<genie::flux::GPowerSpectrumAtmoFlux *>(fFluxD)->NFluxNeutrinos();
+        fTotalExposure = nNeutrinos/fGenFlavors.size();
+        mf::LogInfo("GENIEHelper")
+        << "===> Atmo Ngen/Nflavours = " << fTotalExposure;
+      }
+      else{
+        nNeutrinos = dynamic_cast<genie::flux::GAtmoFlux *>(fFluxD)->NFluxNeutrinos();
+        fTotalExposure = nNeutrinos * 1.0e4 / (TMath::Pi() * fAtmoRt*fAtmoRt);
+        mf::LogInfo("GENIEHelper")
+        << "===> Atmo EXPOSURE = " << fTotalExposure << " seconds.";
+      }
+
+      
+
+      
 
     } else {
       fTotalExposure += fSpillExposure;
@@ -1593,6 +1667,21 @@ namespace evgb {
     if (fUseHelperRndGen4GENIE) gRandom = fHelperRandom;
 
     fGenieEventRecord = fDriver->GenerateEvent();
+
+    if (fForceApplyFlxWgt) {
+      //const issue:  double flxweight = fDriver->FluxDriver().Weight();
+      //genie::GFluxI& flx = const_cast<genie::GFluxI&>(fDriver->FluxDriver());
+      //double flxweight = flx.Weight();
+      // use the flux driver handle we already have, rather than fetch const one
+      //   from the GMCJDriver fDriver
+      double flxweight = fFluxD->Weight();
+      double curweight = fGenieEventRecord->Weight();
+      double probscale = fDriver->GlobProbScale();
+      mf::LogInfo("GENIEHelper") << "flxweight: " << flxweight << " ; "
+                                 << "curweight: " << curweight << " ; "
+                                 << "probscale: " << probscale;
+      fGenieEventRecord->SetWeight(flxweight*curweight*probscale);
+    }
 
     if (fUseHelperRndGen4GENIE) gRandom = old_gRandom;
 
@@ -1628,6 +1717,12 @@ namespace evgb {
     }
     // mf::LogInfo("GENIEHelper") << "TimeShifter adding " << timeoffset;
     double spilltime  = fGlobalTimeOffset + timeoffset;
+
+    std::unordered_map<std::string, std::string> genConfig;
+
+    if(fFluxType.find("PowerSpectrum") != std::string::npos){
+      genConfig.emplace("SpectralIndex", std::to_string(fAtmoSpectralIndex));
+    }
 
     evgb::FillMCTruth(fGenieEventRecord, spilltime, truth,
                       __GENIE_RELEASE__, fTuneName, fAddGenieVtxTime );
@@ -1674,6 +1769,7 @@ namespace evgb {
     }
     else if ( fFluxType.find("atmo_FLUKA")  == 0 ||
               fFluxType.find("atmo_BARTOL") == 0 ||
+              fFluxType.find("atmo_PowerSpectrum") == 0 ||
               fFluxType.find("atmo_BGLRS")  == 0 ||
               fFluxType.find("atmo_HAKKM")  == 0 ||
               fFluxType.find("atmo_HONDA")  == 0    ) {
