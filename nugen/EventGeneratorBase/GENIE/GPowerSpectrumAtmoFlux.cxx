@@ -16,6 +16,7 @@
 #include "Framework/ParticleData/PDGLibrary.h"
 #include "TFile.h"
 #include "TH3D.h"
+#include "TH2.h"
 
 FLUXDRIVERREG4(genie,flux,GPowerSpectrumAtmoFlux,genie::flux::GPowerSpectrumAtmoFlux)
 
@@ -525,13 +526,12 @@ double GPowerSpectrumAtmoFlux::GetFlux(int flavour, double energy, double costh,
 
   if(!flux_hist) return 0.0;
 
-  Int_t e_bin = flux_hist->GetXaxis()->FindBin(energy);
-  Int_t c_bin = flux_hist->GetYaxis()->FindBin(costh);
-  Int_t p_bin = flux_hist->GetZaxis()->FindBin(phi);
-
-  Double_t flux = flux_hist->GetBinContent(e_bin,c_bin,p_bin);
-
-  return flux;
+  if(flux_hist->GetZaxis()->GetNbins() == 1){ //no binning in phi, bilinear interpolation only
+	return static_cast<TH2*>(flux_hist->Project3D("xy"))->Interpolate(energy, costh);
+  }
+  else {
+	return flux_hist->Interpolate(energy, costh, phi);
+  }
 }
 
 //_________________________________________________________________________
