@@ -1291,7 +1291,7 @@ namespace evgb {
       for ( size_t j = 0; j < fGenFlavors.size(); ++j ) {
         int         flavor  = fGenFlavors[j];
         std::string flxfile = fSelectedFluxFiles[j];
-        power_flux->AddFluxFile(flavor,flxfile); // pre-R-2_11_0 was SetFluxFile()
+        power_flux->AddFluxFile(flavor,flxfile);
       }
 
 
@@ -1322,7 +1322,7 @@ namespace evgb {
       // configure flux generation surface:
       power_flux->SetRadii(fAtmoRl, fAtmoRt);
 
-      fFluxD = power_flux;//dynamic_cast<genie::GFluxI *>(atmo_flux_driver);
+      fFluxD = power_flux;
     }
 
     // Using the atmospheric fluxes
@@ -1629,9 +1629,9 @@ namespace evgb {
 
       if(fFluxType.find("PowerSpectrum") != std::string::npos){
         nNeutrinos = dynamic_cast<genie::flux::GPowerSpectrumAtmoFlux *>(fFluxD)->NFluxNeutrinos();
-        fTotalExposure = nNeutrinos/fGenFlavors.size();
+        fTotalExposure = nNeutrinos/fGenFlavors.size()/fDriver->GlobProbScale();
         mf::LogInfo("GENIEHelper")
-        << "===> Atmo Ngen/Nflavours = " << fTotalExposure;
+        << "===> Atmo Pscale*Ngen/Nflavours = " << fTotalExposure;
       }
       else{
         nNeutrinos = dynamic_cast<genie::flux::GAtmoFlux *>(fFluxD)->NFluxNeutrinos();
@@ -1677,11 +1677,7 @@ namespace evgb {
       //   from the GMCJDriver fDriver
       double flxweight = fFluxD->Weight();
       double curweight = fGenieEventRecord->Weight();
-      double probscale = fDriver->GlobProbScale();
-      mf::LogInfo("GENIEHelper") << "flxweight: " << flxweight << " ; "
-                                 << "curweight: " << curweight << " ; "
-                                 << "probscale: " << probscale;
-      fGenieEventRecord->SetWeight(flxweight*curweight*probscale);
+      fGenieEventRecord->SetWeight(flxweight*curweight);
     }
 
     if (fUseHelperRndGen4GENIE) gRandom = old_gRandom;
