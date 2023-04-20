@@ -393,7 +393,7 @@ namespace evgb {
     genie::utils::app_init::RandGen(seedval);
 
     // special things for atmos fluxes
-    if ( fFluxType.find("atmo_") == 0 && fFluxType.find("PowerSpectrum") == std::string::npos) AtmoFluxCheck();
+    if ( fFluxType.find("atmo_") == 0 ) AtmoFluxCheck();
 
     // make the histogram associations
     if ( fFluxType.find("histogram") == 0 ) HistogramFluxCheck();
@@ -819,6 +819,9 @@ namespace evgb {
     else if (fFluxType.find("HONDA") != std::string::npos ||
              fFluxType.find("HAKKM") != std::string::npos    ){
       atmofluxinfo << "  The fluxes are from HONDA/HAKKM";
+    }
+    else if (fFluxType.find("PowerSpectrum") != std::string::npos){
+      atmofluxinfo << "  The fluxes are interpolated HONDA";
     }
     else {
       mf::LogInfo("GENIEHelper")
