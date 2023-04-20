@@ -387,6 +387,10 @@ bool GPowerSpectrumAtmoFlux::FillFluxHisto(int nu_pdg, string filename){
 
 	fRawFluxHistoMap.insert(std::make_pair(nu_pdg, h));
 
+	TH2D* h2 = static_cast<TH2D*>(h->Project3D("yx"));
+
+	fRawFluxHistoMap2D.insert(std::make_pair(nu_pdg, h2));
+
 	return true;
 }
 
@@ -526,8 +530,9 @@ double GPowerSpectrumAtmoFlux::GetFlux(int flavour, double energy, double costh,
 
   if(!flux_hist) return 0.0;
 
-  if(flux_hist->GetZaxis()->GetNbins() == 1){ //no binning in phi, bilinear interpolation only
-	return static_cast<TH2*>(flux_hist->Project3D("xy"))->Interpolate(energy, costh);
+  if(flux_hist->GetZaxis()->GetNbins() == 1){ //no binning in phi, bilinear interpolation only so using the 2D hist
+	TH2D* h2 = fRawFluxHistoMap2D[it->first];
+	return h2->Interpolate(energy, costh);
   }
   else {
 	return flux_hist->Interpolate(energy, costh, phi);
