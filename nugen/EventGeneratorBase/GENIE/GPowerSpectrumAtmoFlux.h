@@ -76,7 +76,6 @@ private:
 	long int fNNeutrinos; ///< number of flux neutrinos thrown so far
 	vector<int> fFluxFlavour; ///< input flux file for each neutrino species
     vector<string> fFluxFile; ///< input flux file for each neutrino species
-	map<int, TH3D*> fFluxHistoMap; ///< flux = f(Ev,cos8,phi) for each neutrino species
   	map<int, TH3D*> fRawFluxHistoMap; ///< flux = f(Ev,cos8,phi) for each neutrino species
   	map<int, TH2D*> fRawFluxHistoMap2D; ///< flux = f(Ev,cos8) for each neutrino species
 

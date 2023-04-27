@@ -420,7 +420,6 @@ bool GPowerSpectrumAtmoFlux::LoadFluxData(void)
   LOG("Flux", pNOTICE)
         << "Loading atmospheric neutrino flux simulation data";
 
-  fFluxHistoMap.clear();
   fPdgCList->clear();
 
   bool loading_status = true;
@@ -447,10 +446,6 @@ bool GPowerSpectrumAtmoFlux::LoadFluxData(void)
     map<int,TH3D*>::iterator hist_iter = fRawFluxHistoMap.begin();
     for ( ; hist_iter != fRawFluxHistoMap.end(); ++hist_iter) {
       int   nu_pdg = hist_iter->first;
-      TH3D* hist   = hist_iter->second;
-
-      TH3D* hnorm = this->CreateNormalisedFluxHisto( hist );
-      fFluxHistoMap.insert( map<int,TH3D*>::value_type(nu_pdg,hnorm) );
       fPdgCList->push_back(nu_pdg);
     }
 
@@ -464,61 +459,11 @@ bool GPowerSpectrumAtmoFlux::LoadFluxData(void)
   return false;
 }
 
-//________________________________________________________________________
-
-TH3D* GPowerSpectrumAtmoFlux::CreateNormalisedFluxHisto(TH3D* hist)
-{
-// return integrated flux
-
-  // sanity check
-  if(!hist) return 0;
-
-  // make new histogram name
-  TString histname = hist->GetName();
-  histname.Append("_IntegratedFlux");
-
-  // make new histogram
-  TH3D* hist_intg = (TH3D*)(hist->Clone(histname.Data()));
-  hist_intg->Reset();
-
-  // integrate flux in each bin
-  Double_t dN_dEdS = 0.0;
-  Double_t dS = 0.0;
-  Double_t dE = 0.0;
-  Double_t dN = 0.0;
-
-  for(Int_t e_bin = 1; e_bin <= hist->GetXaxis()->GetNbins(); e_bin++)
-  {
-    for(Int_t c_bin = 1; c_bin <= hist->GetYaxis()->GetNbins(); c_bin++)
-    {
-      for(Int_t p_bin = 1; p_bin <= hist->GetZaxis()->GetNbins(); p_bin++)
-      {
-         dN_dEdS = hist->GetBinContent(e_bin,c_bin,p_bin);
-
-         dE = hist->GetXaxis()->GetBinUpEdge(e_bin)
-            - hist->GetXaxis()->GetBinLowEdge(e_bin);
-
-         dS = ( hist->GetZaxis()->GetBinUpEdge(p_bin)
-              - hist->GetZaxis()->GetBinLowEdge(p_bin)  )
-            * ( hist->GetYaxis()->GetBinUpEdge(c_bin)
-              - hist->GetYaxis()->GetBinLowEdge(c_bin) );
-
-         dN = dN_dEdS*dE*dS;
-
-         hist_intg->SetBinContent(e_bin,c_bin,p_bin,dN);
-      }
-    }
-  }
-
-  return hist_intg;
-}
-
 
 //_________________________________________________________________________
 
 double GPowerSpectrumAtmoFlux::GetFlux(int flavour, double energy, double costh, double phi)
 {
-  //TODO: ADD SOME INTERPOLATION
   TH3D* flux_hist = nullptr;
   std::map<int,TH3D*>::iterator it = fRawFluxHistoMap.find(flavour);
   if(it != fRawFluxHistoMap.end())
