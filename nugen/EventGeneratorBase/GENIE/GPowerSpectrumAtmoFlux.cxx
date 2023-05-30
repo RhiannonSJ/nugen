@@ -264,6 +264,7 @@ void GPowerSpectrumAtmoFlux::SetSpectralIndex(double index)
 {
 	if( index != 1.0 ){
 		fSpectralIndex = index;
+		this->InitializeWeight(); //Recompute the global weight
 	}
 	else {
 		LOG("Flux", pWARN) << "Warning: cannot use a spectral index of unity";
@@ -348,6 +349,7 @@ void GPowerSpectrumAtmoFlux::SetMinEnergy(double Emin)
 {
 	if(Emin > 0){
 		fMinEvCut = Emin;
+		this->InitializeWeight(); //Recompute the global weight
 	}
 }
 
@@ -355,6 +357,7 @@ void GPowerSpectrumAtmoFlux::SetMinEnergy(double Emin)
 
 void GPowerSpectrumAtmoFlux::SetMaxEnergy(double Emax){
 	fMaxEvCut = Emax;
+	this->InitializeWeight(); //Recompute the global weight
 }
 
 //_________________________________________________________________________________
@@ -497,8 +500,6 @@ double GPowerSpectrumAtmoFlux::ComputeWeight(int flavour, double energy, double 
 
 void GPowerSpectrumAtmoFlux::InitializeWeight()
 {
-	LOG("Flux", pNOTICE) << "Initializing generation weight";
-
 	double IE = 1.;
 
 	if(fSpectralIndex!=1){
