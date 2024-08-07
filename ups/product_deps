@@ -252,9 +252,9 @@ product		version		qual	flags		<table_format=2>
 art_root_io	v1_13_06	-
 dk2nugenie	v01_10_01q	-
 ifdh_art	v2_17_05	-
-nufinder        v1_02_01       -
 nusimdata	v1_28_06	-
-cetmodules	v3_16_00	-	only_for_build
+nufinder        v1_02_01       -	only_for_build
+cetmodules	v3_24_01	-	only_for_build
 end_product_list
 ####################################
 
@@ -309,11 +309,13 @@ end_product_list
 #   case it is optional.
 #
 ####################################
-qualifier	nusimdata	art_root_io	dk2nugenie	ifdh_art   nufinder notes
-c7:debug	c7:debug	c7:debug	c7:debug	c7:debug   -nq-
-c7:prof		c7:prof		c7:prof		c7:prof		c7:prof    -nq-
-e26:debug	e26:debug	e26:debug	e26:debug	e26:debug  -nq-
-e26:prof	e26:prof	e26:prof	e26:prof	e26:prof   -nq-
+qualifier	nusimdata	art_root_io	dk2nugenie	ifdh_art   notes
+c14:debug	c14:debug	c14:debug	c14:debug	c14:debug
+c14:prof	c14:prof	c14:prof	c14:prof	c14:prof
+e26:debug	e26:debug	e26:debug	e26:debug	e26:debug
+e26:prof	e26:prof	e26:prof	e26:prof	e26:prof
+e28:debug	e28:debug	e28:debug	e28:debug	e28:debug
+e28:prof	e28:prof	e28:prof	e28:prof	e28:prof
 end_qualifier_list
 ####################################
 
