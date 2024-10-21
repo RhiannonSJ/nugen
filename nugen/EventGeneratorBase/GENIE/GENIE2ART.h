@@ -11,6 +11,8 @@
 #define EVGB_GENIE2ART_H
 
 #include <string>
+#include "art/Framework/Principal/Event.h"
+#include "art/Framework/Principal/Handle.h"
 #include <unordered_map>
 
 /// GENIE neutrino interaction simulation objects
@@ -77,6 +79,16 @@ namespace evgb {
   genie::EventRecord* RetrieveGHEP(const simb::MCTruth& truth,
                                    const simb::GTruth&  gtruth,
                                    bool useFirstTrajPosition = true);
+
+  std::vector<std::unique_ptr<genie::EventRecord>> RetrieveGHEPs(
+    const art::Handle<std::vector<simb::MCTruth>>& mcTruthHandle,
+    const art::Handle<std::vector<simb::GTruth>>& gTruthHandle
+  );
+  std::vector<std::unique_ptr<genie::EventRecord>> RetrieveGHEPs(
+    const art::Event& e,
+    std::string mcTruthLabel,
+    std::string gTruthLabel
+  );
 
   void FillMCFlux(genie::GFluxI* fdriver, simb::MCFlux& mcflux);
 

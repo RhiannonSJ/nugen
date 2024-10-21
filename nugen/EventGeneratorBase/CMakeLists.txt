@@ -1,3 +1,4 @@
+cet_make_library(LIBRARY_NAME EventGeneratorBase INTERFACE SOURCE evgenbase.h)
 
 install_headers()
 install_fhicl()
