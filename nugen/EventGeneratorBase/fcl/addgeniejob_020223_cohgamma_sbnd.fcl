@@ -76,7 +76,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/exp/sbnd/data/users/rsjones/GEVGEN/mockdata_samples_2023/gevgenJobs/COHGamma/exp/sbnd/all/sbnd_COHGamma_full.ghep.root" ]
+physics.producers.generator.fileList: [ "/exp/sbnd/data/users/rsjones/GEVGEN/mockdata_samples_2023/gevgenJobs/COHGamma/sbnd/all/sbnd_COHGamma_full.ghep.root" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"
