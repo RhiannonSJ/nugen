@@ -1032,7 +1032,7 @@ void evg::AddGenieEventsToLAr::endSubRun(art::SubRun & sr)
   p->totpot     = fPOT; 
   p->totgoodpot = fGoodPOT;
 
-  sr.put(std::move(p));
+  //sr.put(std::move(p));
 
   return;
 }

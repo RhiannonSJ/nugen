@@ -77,7 +77,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/sbnd/data/users/rsjones/GEVGEN/mockdata_samples_2023/gevgenJobs/COHGamma/icarus/all/icarus_COHGamma_full.ghep.root" ]
+physics.producers.generator.fileList: [ "/exp/sbnd/data/users/rsjones/GEVGEN/mockdata_samples_2023/gevgenJobs/COHGamma/icarus/all/icarus_COHGamma_full.ghep.root" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"

@@ -77,7 +77,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/exp/sbnd/data/users/rsjones/GEVGEN/genie_master/gevgenJobs/SmithMoniz/icarus/all/activeSmith5e20POT.ghep.root" ]
+physics.producers.generator.fileList: [ "/exp/sbnd/data/users/rsjones/GEVGEN/mockdata_samples_2023/gevgenJobs/Nieves/icarus/all/activeNieves5e20POT.ghep.root" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"

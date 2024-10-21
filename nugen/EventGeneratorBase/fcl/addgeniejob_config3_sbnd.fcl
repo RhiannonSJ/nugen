@@ -76,7 +76,7 @@ outputs:
   }
 }
 
-physics.producers.generator.fileList: [ "/sbnd/app/users/gjparker/analyzer/genie_files/Generator/config_3.root" ]
+physics.producers.generator.fileList: [ "/exp/sbnd/app/users/gjparker/analyzer/genie_files/Generator/config_3.root" ]
 physics.producers.generator.timeConfig: "Booster"
 physics.producers.generator.addMCFlux: true
 physics.producers.generator.countConfig:  "fixed: 1"
